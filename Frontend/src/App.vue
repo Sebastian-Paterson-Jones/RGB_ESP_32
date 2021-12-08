@@ -1,18 +1,31 @@
 <template>
-
+  <section class="main" id="main" :style="`background-color: ${color}`">
+    <colour-component></colour-component>
+  </section>
 </template>
+
 <script>
+import colourComponent from "./components/colours.vue";
+
 export default {
-  name: "main"
+  data() {
+    return {
+      color: '#FFFFFF',
+    }
+  },
+  methods: {
+    setBackgroundColour(color) {
+      this.color = color;
+    }
+  },
+  components: {
+    colourComponent,
+  }
 }
 </script>
 <style scoped>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.main {
+  width: 100vw;
+  height: 100vh;
 }
 </style>
