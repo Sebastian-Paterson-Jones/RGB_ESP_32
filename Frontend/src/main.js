@@ -1,4 +1,8 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
+import './assets/reset.css'
+import './assets/styes.css'
 
-createApp(App).mount('#app')
+new Vue({
+    render: (h) => h(App),
+}).$mount('#app');
