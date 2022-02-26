@@ -1,13 +1,9 @@
-from fastapi_users import models
+from typing import List
+from pydantic import BaseModel
 
-class User(models.BaseUser):
-    pass
+class Color(BaseModel):
+    color: str
+    title: str
 
-class UserCreate(models.BaseUserCreate):
-    pass
-
-class UserUpdate(models.BaseUserUpdate):
-    pass
-
-class UserDB(User, models.BaseUserDB):
-    pass
+class ColorList(BaseModel):
+    data: List[Color]
