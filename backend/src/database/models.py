@@ -1,9 +1,9 @@
-from typing import List
-from pydantic import BaseModel
+from sqlalchemy import Column, Integer, String
+from db import Base
 
-class Color(BaseModel):
-    color: str
-    title: str
 
-class ColorList(BaseModel):
-    data: List[Color]
+class Color(Base):
+    __tablename__ = "color_list"
+    id = Column(Integer, primary_key=True, index=True)
+    color: Column(String)
+    title: Column(String)

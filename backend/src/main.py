@@ -1,60 +1,38 @@
-from fastapi import FastAPI
-from fastapi_users import FastAPIUsers
-from fastapi_users.authentication import JWTAuthentication
+from typing import List
 
-from database.models import User, UserCreate, UserUpdate, UserDB
-from database.user_manager import get_user_manager
-from database.db import database
+from fastapi import Depends, FastAPI
+from sqlalchemy.orm import Session
 
-SECRET = "SECRET"
+from database import crud, models, schemas
+from database.db import SessionLocal, engine
 
-jwt_authentication = JWTAuthentication(secret=SECRET, lifetime_seconds=3600)
-
-fastapi_users = FastAPIUsers(
-    get_user_manager,
-    [jwt_authentication],
-    User,
-    UserCreate,
-    UserUpdate,
-    UserDB,
-)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# establish db connection
-@app.on_event("startup")
-async def startup():
-    await database.connect()
+# Dependency
+def get_db():
+    db  = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-# close db connection
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
 
-# router for user login and logout
-app.include_router(
-    fastapi_users.get_auth_router(jwt_authentication),
-    prefix="/auth",
-    tags=["auth"],
-)
+# route to get colors
+@app.get("/colors", response_model=List[schemas.Color])
+def get_colors(db: Session = Depends(get_db())):
+    return crud.get_colors(db)
 
-# router for user register
-app.include_router(
-    fastapi_users.get_register_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
 
-# router for reset user password
-app.include_router(
-    fastapi_users.get_reset_password_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
+# route to get color
+@app.get("/colors/{color_id}", response_model=schemas.Color)
+def get_color(color_id: int, db: Session = Depends(get_db())):
+    return crud.get_color(db, color_id)
 
-# router to get, delete, or update user
-app.include_router(
-    fastapi_users.get_users_router(),
-    prefix="/users",
-    tags=["users"],
-)
+
+# route to patch colours
+@app.patch("/colors/{color_id}", response=schemas.Color)
+def update_color(color_id: int, color: schemas.ColorUpdate, db: Session = Depends(get_db())):
+    return crud.update_color(db, color_id, color)
+
