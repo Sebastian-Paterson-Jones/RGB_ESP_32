@@ -1,13 +1,9 @@
-from fastapi_users import models
+from sqlalchemy import Column, Integer, String
+from db import Base
 
-class User(models.BaseUser):
-    pass
 
-class UserCreate(models.BaseUserCreate):
-    pass
-
-class UserUpdate(models.BaseUserUpdate):
-    pass
-
-class UserDB(User, models.BaseUserDB):
-    pass
+class Color(Base):
+    __tablename__ = "color_list"
+    id = Column(Integer, primary_key=True, index=True)
+    color: Column(String)
+    title: Column(String)

@@ -1,24 +1,12 @@
-import databases
-import sqlalchemy
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-from .models import UserDB
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sqlite_db.db"
 
-DATABASE_URL = "postgresql://postgres:example@db/postgres"
-database = databases.Database(DATABASE_URL)
-Base: DeclarativeMeta = declarative_base()
-
-
-class UserTable(Base, SQLAlchemyBaseUserTable):
-    pass
-
-engine = sqlalchemy.create_engine(
-    DATABASE_URL
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-Base.metadata.create_all(engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-users = UserTable.__table__
-
-async def get_user_db():
-    yield SQLAlchemyUserDatabase(UserDB, database, users)
+Base = declarative_base()
